@@ -1,7 +1,7 @@
 import json
 
 
-Account_create_success = json.loads('''{
+create_success = json.loads('''{
     "id": "acct_1234",
     "email": "bob@example.com",
     "statement_descriptor": "TXSTRIPE",
@@ -106,7 +106,7 @@ Account_create_success = json.loads('''{
 }''')
 
 
-Account_retrieve_success = json.loads('''{
+retrieve_success = json.loads('''{
   "id": "acct_16eMP8BjEqCcIEtt",
   "email": "ben+stripe@scrunch.co",
   "statement_descriptor": "SCRUNCH",
@@ -212,7 +212,7 @@ Account_retrieve_success = json.loads('''{
 }''')
 
 
-Account_all_success = json.loads('''{
+all_success = json.loads('''{
   "object": "list",
   "url": "/v1/accounts",
   "has_more": false,

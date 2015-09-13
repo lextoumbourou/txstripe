@@ -120,7 +120,7 @@ class APIResource(StripeObject, stripe.APIResource):
         """Return a deferred."""
         instance = cls(id, api_key, **params)
         d = instance.refresh()
-        return d.addCallback(lambda: instance)
+        return d.addCallback(lambda _: instance)
 
     def refresh(self):
         """Return a deferred."""
@@ -151,13 +151,22 @@ class ListObject(StripeObject):
     retrieve = stripe.ListObject.retrieve
 
 
-class SingletonAPIResource(StripeObject):
+class SingletonAPIResource(APIResource):
 
     """Mixin overrides request."""
 
-    retrieve = stripe.SingletonAPIResource.retrieve
-    class_url = stripe.SingletonAPIResource.class_url
-    instance_url = stripe.SingletonAPIResource.instance_url
+    @classmethod
+    def retrieve(cls, **params):
+        return super(SingletonAPIResource, cls).retrieve(None, **params)
+
+    @classmethod
+    def class_url(cls):
+        cls_name = cls.class_name()
+        return "/v1/%s" % (cls_name,)
+
+    def instance_url(self):
+        return self.class_url()
+
 
 
 class ListableAPIResource(APIResource):
@@ -228,3 +237,10 @@ class Account(CreateableAPIResource, ListableAPIResource,
 
     def instance_url(self):
         return super(Account, self).instance_url()
+
+
+class Balance(SingletonAPIResource):
+
+    """Override blocking methods."""
+
+    pass
