@@ -1,4 +1,8 @@
-"""A bunch of monkey patching to make Stripe async."""
+"""
+Stripe Twisted Bindings.
+
+A bunch of monkey patching to make the stripe-python library play nice with Twisted.
+"""
 
 import warnings
 

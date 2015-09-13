@@ -4,4 +4,5 @@ from stripe.error import (  # noqa
     AuthenticationError,
     CardError,
     InvalidRequestError,
-    StripeError)
+    StripeError
+)
