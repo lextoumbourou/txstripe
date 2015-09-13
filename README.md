@@ -1,5 +1,7 @@
 # Stripe Twisted bindings
 
+[![Build Status](https://travis-ci.org/lextoumbourou/txstripe.svg?branch=master)](https://travis-ci.org/lextoumbourou/txstripe)
+
 ## Status
 
 WIP. Don't use yet.
