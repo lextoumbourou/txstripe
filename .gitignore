@@ -12,3 +12,5 @@
 .cache
 nosetests.xml
 coverage.xml
+_trial_temp
+child.log
