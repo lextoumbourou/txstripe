@@ -1,6 +1,4 @@
-# Twisted Python bindings
-
-Stripe Python bindings but for Twisted.
+# Stripe Twisted bindings
 
 ## Status
 
@@ -8,7 +6,7 @@ WIP. Don't use yet.
 
 ## Usage
 
-Works exactly like [stripe-python](https://github.com/stripe/stripe-python), except each blocking method returns a Deferred.
+Works exactly like [stripe-python](https://github.com/stripe/stripe-python) except each blocking method returns a [Deferred](http://twistedmatrix.com/documents/current/core/howto/defer.html).
 
 ## Examples
 
