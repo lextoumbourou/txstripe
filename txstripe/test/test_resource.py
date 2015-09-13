@@ -1,33 +1,8 @@
-"""Test txstripe."""
+"""Test txstripe resources."""
 
-from mock import patch, Mock
-
-from twisted.trial.unittest import TestCase
 from twisted.internet import defer
 
-import txstripe
-from txstripe.test import mocks
-
-
-class BaseTest(TestCase):
-
-    """Default settings for all tests."""
-
-    def _json_mock(self):
-        return self.mocked_resp
-
-    def setUp(self):
-        self._mocked_resp = {}
-
-        self.resp_mock = Mock()
-        self.resp_mock.json = self._json_mock
-
-        treq_patch = patch('txstripe.treq')
-        self.treq_mock = treq_patch.start()
-        self.treq_mock.request.return_value = defer.succeed(self.resp_mock)
-
-        self.txstripe = txstripe
-        self.txstripe.api_key = 'ABC123'
+from txstripe.test import BaseTest, mocks
 
 
 class AccountTest(BaseTest):
