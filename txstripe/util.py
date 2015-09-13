@@ -95,13 +95,16 @@ def handle_api_error(resp):
             err.get('message'), content, resp.code, resp, headers)
 
 
-class HeaderWrapper(object):
+class HeaderWrapper(dict):
 
-    """Simple wrapper for Twisted headers to behave a bit like a dict."""
+    """Simple wrapper for Twisted headers to behave like a dict."""
 
     def __init__(self, headers):
         self.headers = headers
 
-    def get(self, name, default=None):
+    def __getitem__(self, name):
         headers = self.headers.getRawHeaders(name, None)
-        return headers[0] if headers else default
+        if headers:
+            return headers
+
+        raise KeyError(name)
