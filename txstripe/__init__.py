@@ -1,6 +1,5 @@
 """A bunch of monkey patching to make Stripe async."""
 
-import urllib
 from twisted.internet import defer
 import treq
 
@@ -166,7 +165,6 @@ class SingletonAPIResource(APIResource):
 
     def instance_url(self):
         return self.class_url()
-
 
 
 class ListableAPIResource(APIResource):
