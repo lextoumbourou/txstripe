@@ -96,3 +96,45 @@ class CustomerTest(BaseTest):
         result = yield d
         self.assertEquals(result.deleted, True)
         self.assertEquals(result.id, mocks.Customer.delete_success['id'])
+
+
+class PlanTest(BaseTest):
+
+    """Test txstripe.Plan class."""
+
+    def test_plan_create(self):
+        """Method should return a deferred."""
+        self.mocked_resp = mocks.Plan.create_success
+        self.resp_mock.code = 200
+
+        d = self.txstripe.Plan.create(
+            amount=2000,
+            interval='month',
+            name='Amazing Gold Plan',
+            currency='aud',
+            id='gold'
+        )
+        self.assertIsInstance(d, defer.Deferred)
+
+    @defer.inlineCallbacks
+    def test_plan_update(self):
+        """Method should return a deferred."""
+        self.mocked_resp = mocks.Plan.create_success
+        self.resp_mock.code = 200
+
+        plan = yield self.txstripe.Plan.create(
+            amount=2000,
+            interval='month',
+            name='Gold Special',
+            currency='aud',
+            id='gold'
+        )
+        plan.name = 'Test!'
+        self.mocked_resp = mocks.Plan.retrieve_success
+        self.resp_mock.code = 200
+
+        d = plan.save()
+        self.assertIsInstance(d, defer.Deferred)
+
+        yield d
+        self.assertEquals(plan.name, 'Test!')

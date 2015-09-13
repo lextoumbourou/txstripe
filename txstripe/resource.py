@@ -13,7 +13,7 @@ from stripe.resource import (
 
 import txstripe
 
-from . import util, api_key, error
+from txstripe import util, api_key, error
 
 
 def convert_to_stripe_object(resp, api_key, account):
@@ -207,7 +207,7 @@ class UpdateableAPIResource(APIResource):
             return defer.succeed(self)
 
         d = self.request('post', self.instance_url(), updated_params, headers)
-        return d.addCallback(self.refresh_from).addCallback(lambda: self)
+        return d.addCallback(self.refresh_from).addCallback(lambda _: self)
 
 
 class DeletableAPIResource(APIResource):
@@ -282,14 +282,14 @@ class Charge(
         url = self.instance_url() + '/refund'
         headers = populate_headers(idempotency_key)
         d = self.request('post', url, params, headers)
-        return d.addCallback(self.refresh_from).addCallback(lambda: self)
+        return d.addCallback(self.refresh_from).addCallback(lambda _: self)
 
     def capture(self, idempotency_key=None, **params):
         """Return a deferred."""
         url = self.instance_url() + '/refund'
         headers = populate_headers(idempotency_key)
         d = self.request('post', url, params, headers)
-        return d.addCallback(self.refresh_from).addCallback(lambda: self)
+        return d.addCallback(self.refresh_from).addCallback(lambda _: self)
 
     def update_dispute(self, idempotency_key=None, **params):
         """Return a deferred."""
@@ -315,7 +315,7 @@ class Charge(
         url = self.instance_url()
         headers = populate_headers(idempotency_key)
         d = self.request('post', url, params, headers)
-        return d.addCallback(self.refresh_from).addCallback(lambda: self)
+        return d.addCallback(self.refresh_from).addCallback(lambda _: self)
 
     def mark_as_safe(self, idempotency_key=None):
         """Return a deferred."""
@@ -323,7 +323,7 @@ class Charge(
         url = self.instance_url()
         headers = populate_headers(idempotency_key)
         d = self.request('post', url, params, headers)
-        return d.addCallback(self.refresh_from).addCallback(lambda: self)
+        return d.addCallback(self.refresh_from).addCallback(lambda _: self)
 
 
 class Dispute(
@@ -337,7 +337,7 @@ class Dispute(
         url = self.instance_url() + '/close'
         headers = populate_headers(idempotency_key)
         d = self.request('post', url, {}, headers)
-        return d.addCallback(self.refresh_from).addCallback(lambda: self)
+        return d.addCallback(self.refresh_from).addCallback(lambda _: self)
 
 
 class Customer(CreateableAPIResource, UpdateableAPIResource,
