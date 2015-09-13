@@ -62,3 +62,37 @@ class BalanceTest(BaseTest):
 
         balance = yield d
         self.assertEquals(balance.available[1].amount, 497771)
+
+
+class CustomerTest(BaseTest):
+
+    """Test txstripe.Customer class."""
+
+    @defer.inlineCallbacks
+    def test_customer_retrieve(self):
+        """Method should return a deferred and correct JSON response."""
+        self.mocked_resp = mocks.Customer.retrieve_success
+        self.resp_mock.code = 200
+
+        d = self.txstripe.Customer.retrieve('something_123')
+        self.assertIsInstance(d, defer.Deferred)
+
+        customer = yield d
+        self.assertEquals(customer.id, mocks.Customer.retrieve_success['id'])
+
+    @defer.inlineCallbacks
+    def test_customer_delete(self):
+        """Method should return a deferred and correct JSON response."""
+        self.mocked_resp = mocks.Customer.retrieve_success
+        self.resp_mock.code = 200
+
+        customer = yield self.txstripe.Customer.retrieve('something_123')
+
+        self.mocked_resp = mocks.Customer.delete_success
+        self.resp_mock.code = 200
+        d = customer.delete()
+        self.assertIsInstance(d, defer.Deferred)
+
+        result = yield d
+        self.assertEquals(result.deleted, True)
+        self.assertEquals(result.id, mocks.Customer.delete_success['id'])

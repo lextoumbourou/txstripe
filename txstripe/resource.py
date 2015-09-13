@@ -3,6 +3,7 @@
 import warnings
 
 from twisted.internet import defer
+import treq
 import stripe
 from stripe.resource import (
     Reversal as StripeReversal,
@@ -10,7 +11,89 @@ from stripe.resource import (
     populate_headers
 )
 
-from . import util, api_key
+import txstripe
+
+from . import util, api_key, error
+
+
+def convert_to_stripe_object(resp, api_key, account):
+    types = {'account': Account, 'charge': Charge, 'customer': Customer,
+             'invoice': Invoice, 'invoiceitem': InvoiceItem,
+             'plan': Plan, 'coupon': Coupon, 'token': Token, 'event': Event,
+             'transfer': Transfer, 'list': ListObject, 'recipient': Recipient,
+             'bank_account': BankAccount,
+             'card': Card, 'application_fee': ApplicationFee,
+             'subscription': Subscription, 'refund': Refund,
+             'file_upload': FileUpload,
+             'fee_refund': ApplicationFeeRefund,
+             'bitcoin_receiver': BitcoinReceiver,
+             'bitcoin_transaction': BitcoinTransaction,
+             'transfer_reversal': Reversal}
+
+    if isinstance(resp, list):
+        return [convert_to_stripe_object(i, api_key, account) for i in resp]
+    elif isinstance(resp, dict) and not isinstance(resp, StripeObject):
+        resp = resp.copy()
+        klass_name = resp.get('object')
+        if isinstance(klass_name, basestring):
+            klass = types.get(klass_name, StripeObject)
+        else:
+            klass = StripeObject
+        return klass.construct_from(resp, api_key, stripe_account=account)
+    else:
+        return resp
+
+
+@defer.inlineCallbacks
+def make_request(
+    ins, method, url, stripe_account=None, params=None, headers=None, **kwargs
+):
+    """
+    Return a deferred or handle error.
+
+    For overriding in various classes.
+    """
+    if txstripe.api_key is None:
+        raise error.AuthenticationError(
+            'No API key provided. (HINT: set your API key using '
+            '"stripe.api_key = <API-KEY>"). You can generate API keys '
+            'from the Stripe web interface.  See https://stripe.com/api '
+            'for details, or email support@stripe.com if you have any '
+            'questions.')
+
+    abs_url = '%s%s' % (txstripe.api_base, url)
+
+    ua = {
+        'lang': 'python',
+        'publisher': 'lextoumbourou',
+        'httplib': 'Twisted',
+    }
+
+    headers = headers or {}
+    headers.update({
+        'X-Stripe-Client-User-Agent': util.json.dumps(ua),
+        'User-Agent': 'txstripe',
+        'Authorization': 'Bearer %s' % (txstripe.api_key,)
+    })
+
+    if stripe_account:
+        headers['Stripe-Account'] = stripe_account
+
+    if txstripe.api_version is not None:
+        headers['Stripe-Version'] = txstripe.api_version
+
+    resp = yield treq.request(
+        method, abs_url, params=params, headers=headers, **kwargs)
+
+    if resp.code >= 400:
+        yield util.handle_api_error(resp)
+        return
+
+    body = yield resp.json()
+
+    defer.returnValue(
+        convert_to_stripe_object(
+            body, txstripe.api_key, stripe_account))
 
 
 class StripeObject(stripe.StripeObject):
@@ -22,7 +105,7 @@ class StripeObject(stripe.StripeObject):
         if params is None:
             params = self._retrieve_params
 
-        return util.make_request(
+        return make_request(
             self, method, url, stripe_account=self.stripe_account,
             params=params, headers=headers)
 
@@ -93,7 +176,7 @@ class ListableAPIResource(APIResource):
             stripe_account=None, **params):
         """Return a deferred."""
         url = cls.class_url()
-        return util.make_request(
+        return make_request(
             cls, 'get', url, stripe_acconut=None, params=params)
 
 
@@ -108,7 +191,7 @@ class CreateableAPIResource(APIResource):
         """Return a deferred."""
         url = cls.class_url()
         headers = populate_headers(idempotency_key)
-        return util.make_request(
+        return make_request(
             cls, 'post', url, stripe_account=stripe_account, headers=headers)
 
 
@@ -136,7 +219,7 @@ class DeletableAPIResource(APIResource):
     def delete(self, **params):
         """Return a deferred."""
         d = self.request('delete', self.instance_url(), params)
-        return d.addCallback(self.request_from).addCallback(lambda: self)
+        return d.addCallback(self.refresh_from).addCallback(lambda _: self)
 
 
 class Account(CreateableAPIResource, ListableAPIResource,
