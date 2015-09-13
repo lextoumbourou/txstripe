@@ -141,13 +141,11 @@ class APIResource(StripeObject, stripe.APIResource):
         return super(APIResource, self).instance_url()
 
 
-class ListObject(StripeObject):
+class ListObject(StripeObject, stripe.ListObject):
 
     """Mixin overrides request."""
 
-    all = stripe.ListObject.all
-    create = stripe.ListObject.create
-    retrieve = stripe.ListObject.retrieve
+    pass
 
 
 class SingletonAPIResource(APIResource):
