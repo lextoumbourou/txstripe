@@ -1,6 +1,7 @@
 # Stripe Twisted bindings
 
 [![Build Status](https://travis-ci.org/lextoumbourou/txstripe.svg?branch=master)](https://travis-ci.org/lextoumbourou/txstripe)
+[![Coverage Status](https://coveralls.io/repos/lextoumbourou/txstripe/badge.svg?branch=master&service=github)](https://coveralls.io/github/lextoumbourou/txstripe?branch=master)
 
 ## Usage
 
