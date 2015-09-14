@@ -138,3 +138,25 @@ class PlanTest(BaseTest):
 
         yield d
         self.assertEquals(plan.name, 'Test!')
+
+
+class SubscriptionTest(BaseTest):
+
+    """test txstripe.Subscription class."""
+
+    @defer.inlineCallbacks
+    def test_subscription_update(self):
+        self.mocked_resp = mocks.Customer.retrieve_success
+        self.resp_mock.code = 200
+
+        customer = yield self.txstripe.Customer.retrieve('cus_1234')
+        sub = customer.subscriptions.data[0]
+
+        self.mocked_resp = mocks.Subscription.retrieve_success
+        self.resp_mock.code = 200
+
+        d = sub.save()
+        self.assertIsInstance(d, defer.Deferred)
+
+        resp = yield d
+        self.assertTrue(resp.id == mocks.Subscription.retrieve_success['id'])

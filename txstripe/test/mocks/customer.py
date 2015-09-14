@@ -16,9 +16,40 @@ retrieve_success = json.loads('''{
     "total_count": 0,
     "has_more": false,
     "url": "/v1/customers/cus_1234/subscriptions",
-    "data": [
-
-    ]
+    "data": [{
+      "id": "sub_6yuYOFaUhpWt73",
+      "plan": {
+        "interval": "month",
+        "name": "Small Plan",
+        "created": 1441195927,
+        "amount": 49900,
+        "currency": "usd",
+        "id": "small_plan_1",
+        "object": "plan",
+        "livemode": false,
+        "interval_count": 1,
+        "trial_period_days": null,
+        "metadata": {
+        },
+        "statement_descriptor": "SCRUNCH SMALL PLAN"
+      },
+      "object": "subscription",
+      "start": 1442236277,
+      "status": "active",
+      "customer": "cus_6ypxqa4dHSGhbU",
+      "cancel_at_period_end": false,
+      "current_period_start": 1442236277,
+      "current_period_end": 1444828277,
+      "ended_at": null,
+      "trial_start": null,
+      "trial_end": null,
+      "canceled_at": null,
+      "quantity": 1,
+      "application_fee_percent": null,
+      "discount": null,
+      "tax_percent": null,
+      "metadata": {}
+    }]
   },
   "discount": null,
   "account_balance": 0,

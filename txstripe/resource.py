@@ -44,6 +44,9 @@ def convert_to_stripe_object(resp, api_key, account):
         return resp
 
 
+stripe.resource.convert_to_stripe_object = convert_to_stripe_object
+
+
 @defer.inlineCallbacks
 def make_request(
     ins, method, url, stripe_account=None, params=None, headers=None, **kwargs
