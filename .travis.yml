@@ -5,7 +5,11 @@ python:
 
 install:
   - pip install --requirement requirements.txt
+  - pip install coveralls
 
 script:
-  - trial txstripe
+  - coverage run --source='./txstripe' $(which trial) txstripe && coverage report --show-missing
   - flake8 txstripe/.
+
+after_success:
+  - coveralls
