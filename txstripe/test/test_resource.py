@@ -146,6 +146,7 @@ class SubscriptionTest(BaseTest):
 
     @defer.inlineCallbacks
     def test_subscription_update(self):
+        """Method should return a deferred."""
         self.mocked_resp = mocks.Customer.retrieve_success
         self.resp_mock.code = 200
 
