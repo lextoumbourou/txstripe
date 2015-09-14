@@ -2,10 +2,6 @@
 
 [![Build Status](https://travis-ci.org/lextoumbourou/txstripe.svg?branch=master)](https://travis-ci.org/lextoumbourou/txstripe)
 
-## Status
-
-WIP. Don't use yet.
-
 ## Usage
 
 Works exactly like [stripe-python](https://github.com/stripe/stripe-python) except each blocking method returns a [Deferred](http://twistedmatrix.com/documents/current/core/howto/defer.html).
@@ -43,11 +39,14 @@ Deferred #0 called back: <ListObject list at 0x7f81ddb55eb0> JSON: {
 ### In code
 
 ```
+from twisted.internet import reactor
+from twisted.internet import defer
+
 import txstripe
 txstripe.api_key = 'ABC123'
 
 
-@inlineCallbacks
+@defer.inlineCallbacks
 def print_customers_and_subs():
     customer = yield txstripe.Customer.all()
     print customer
@@ -60,9 +59,11 @@ if __name__ == "__main__":
     reactor.run()
 ```
 
-## Developing
+## Changelog
 
-Designed to be as small a port as possible without requiring any of the original dependancies.
+### 0.0.3
+
+First working version.
 
 ## License
 
