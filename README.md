@@ -11,7 +11,7 @@ Works exactly like [stripe-python](https://github.com/stripe/stripe-python) exce
 
 ### In the REPL
 
-```
+```python
 $ python -m twisted.conch.stdio
 >>> import txstripe
 >>> txstripe.api_key = 'ABC123'
@@ -39,7 +39,7 @@ Deferred #0 called back: <ListObject list at 0x7f81ddb55eb0> JSON: {
 
 ### In code
 
-```
+```python
 from twisted.internet import reactor
 from twisted.internet import defer
 
