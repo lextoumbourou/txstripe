@@ -6,12 +6,13 @@ except ImportError:
 
 setup(
     name='txstripe',
-    version='0.0.1',
+    version='0.0.2',
     description='Stripe Twisted bindings',
     author='Lex Toumbourou',
     author_email='lextoumbourou@gmail.com',
     url='https://github.com/lextoumbourou/txstripe',
     packages=['stripe', 'txstripe'],
+    install_requires=['Twisted', 'treq'],
     classifiers=[
         "Intended Audience :: Developers",
         "License :: OSI Approved :: MIT License",
