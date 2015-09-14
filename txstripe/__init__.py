@@ -1,12 +1,4 @@
-"""
-Stripe Twisted Bindings.
-
-This single function is basically the core of txstripe. Treq makes
-the call to the Stripe API instead of a blocking library.
-
-The rest of the codebase is basically monkey patching this in any time
-it's needed.
-"""
+"""Stripe Twisted Bindings."""
 
 from stripe import (  # noqa
     api_key, api_base, upload_api_base,
