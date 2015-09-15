@@ -59,7 +59,30 @@ retrieve_success = json.loads('''{
     "total_count": 0,
     "has_more": false,
     "url": "/v1/customers/cus_1234/sources",
-    "data": []
+    "data": [{
+      "id": "card_1234",
+      "object": "card",
+      "last4": "1881",
+      "brand": "Visa",
+      "funding": "credit",
+      "exp_month": 3,
+      "exp_year": 2017,
+      "country": "US",
+      "name": "lextoumbourou@hello.com",
+      "address_line1": null,
+      "address_line2": null,
+      "address_city": null,
+      "address_state": null,
+      "address_zip": null,
+      "address_country": null,
+      "cvc_check": "pass",
+      "address_line1_check": null,
+      "address_zip_check": null,
+      "tokenization_method": null,
+      "dynamic_last4": null,
+      "metadata": {},
+      "customer": "abc_1234"
+    }]
   },
   "default_source": null
 }''')

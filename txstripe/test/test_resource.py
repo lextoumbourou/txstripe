@@ -161,3 +161,26 @@ class SubscriptionTest(BaseTest):
 
         resp = yield d
         self.assertTrue(resp.id == mocks.Subscription.retrieve_success['id'])
+
+
+class CardTest(BaseTest):
+
+    """Test txscript.Card class."""
+
+    @defer.inlineCallbacks
+    def test_card_update(self):
+        """Method should reutrn a deferred."""
+        self.mocked_resp = mocks.Customer.retrieve_success
+        self.resp_mock.code = 200
+
+        customer = yield self.txstripe.Customer.retrieve('cus_1234')
+        card = customer.sources.data[0]
+
+        self.mocked_resp = mocks.Card.retrieve_success
+        self.resp_mock.code = 200
+
+        d = card.save()
+        self.assertIsInstance(d, defer.Deferred)
+
+        resp = yield d
+        self.assertTrue(resp.id == mocks.Card.retrieve_success['id'])
