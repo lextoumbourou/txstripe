@@ -64,7 +64,7 @@ def make_request(
             'for details, or email support@stripe.com if you have any '
             'questions.')
 
-    abs_url = '%s%s' % (txstripe.api_base, url)
+    abs_url = '{}{}'.format(txstripe.api_base, url)
 
     ua = {
         'lang': 'python',
