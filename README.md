@@ -3,6 +3,12 @@
 [![Build Status](https://travis-ci.org/lextoumbourou/txstripe.svg?branch=master)](https://travis-ci.org/lextoumbourou/txstripe)
 [![Coverage Status](https://coveralls.io/repos/lextoumbourou/txstripe/badge.svg?branch=master&service=github)](https://coveralls.io/github/lextoumbourou/txstripe?branch=master)
 
+## Installation
+
+```
+> pip install txstripe
+```
+
 ## Usage
 
 Works exactly like [stripe-python](https://github.com/stripe/stripe-python) except each blocking method returns a [Deferred](http://twistedmatrix.com/documents/current/core/howto/defer.html).
