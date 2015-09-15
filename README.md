@@ -62,9 +62,14 @@ if __name__ == "__main__":
 
 ## Changelog
 
+### 0.0.4
+
+* Ensure urls passed to Treq are bytes, not unicode.
+* Test coverage.
+
 ### 0.0.3
 
-First working version.
+* First working version.
 
 ## License
 
