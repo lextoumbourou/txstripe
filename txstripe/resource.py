@@ -85,8 +85,18 @@ def make_request(
     if txstripe.api_version is not None:
         headers['Stripe-Version'] = txstripe.api_version
 
+    if method == 'get' or method == 'delete':
+        data = None
+    elif method == 'post':
+        data = params
+        params = None
+    else:
+        raise error.APIConnectionError(
+            'Unrecognized HTTP method %r.  This may indicate a bug in the '
+            'Stripe bindings.' % (method,))
+
     resp = yield treq.request(
-        method, abs_url, params=params, headers=headers, **kwargs)
+        method, abs_url, params=params, data=data, headers=headers, **kwargs)
 
     if resp.code >= 400:
         yield util.handle_api_error(resp)
@@ -193,7 +203,8 @@ class CreateableAPIResource(APIResource):
         url = cls.class_url()
         headers = populate_headers(idempotency_key)
         return make_request(
-            cls, 'post', url, stripe_account=stripe_account, headers=headers)
+            cls, 'post', url, stripe_account=stripe_account,
+            headers=headers, params=params)
 
 
 class UpdateableAPIResource(APIResource):

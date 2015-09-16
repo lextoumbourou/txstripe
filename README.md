@@ -68,6 +68,10 @@ if __name__ == "__main__":
 
 ## Changelog
 
+### 0.0.5
+
+* Fix bug with ``create`` method not sending up params.
+
 ### 0.0.4
 
 * Ensure urls passed to Treq are bytes, not unicode.
