@@ -4,6 +4,7 @@
 /stripe.egg-info
 *.pyc
 *.egg
+*.egg*
 *.class
 
 # Unit test / coverage reports
