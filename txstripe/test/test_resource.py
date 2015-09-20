@@ -210,7 +210,7 @@ class ChargeTest(BaseTest):
                 'headers']['Idempotency-Key'], 'IDEMKEY')
 
     @defer.inlineCallbacks
-    def test_capture_should_post(self):
+    def test_that_capture_should_post(self):
         """Method should call post params with idempotency key."""
         self.mocked_resp = mocks.Charge.retrieve_success
         self.resp_mock.code = 200
