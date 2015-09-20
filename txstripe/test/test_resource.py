@@ -169,7 +169,7 @@ class CardTest(BaseTest):
 
     @defer.inlineCallbacks
     def test_card_update(self):
-        """Method should reutrn a deferred."""
+        """Method should return a deferred."""
         self.mocked_resp = mocks.Customer.retrieve_success
         self.resp_mock.code = 200
 
@@ -184,3 +184,57 @@ class CardTest(BaseTest):
 
         resp = yield d
         self.assertTrue(resp.id == mocks.Card.retrieve_success['id'])
+
+
+class ChargeTest(BaseTest):
+
+    """Test txstripe.Charge class."""
+
+    @defer.inlineCallbacks
+    def test_refund_should_post(self):
+        """Method should call post params with idempotency key."""
+        self.mocked_resp = mocks.Charge.retrieve_success
+        self.resp_mock.code = 200
+
+        charge = yield self.txstripe.Charge.retrieve(
+            mocks.Charge.retrieve_success['id'])
+
+        self.mocked_resp = mocks.Refund.create_success
+        self.resp_mock.code = 200
+
+        refund = yield charge.refund('IDEMKEY')
+
+        self.assertEquals(refund.id, mocks.Refund.create_success['id'])
+        self.assertEquals(
+            self.treq_mock.request.call_args[1][
+                'headers']['Idempotency-Key'], 'IDEMKEY')
+
+    @defer.inlineCallbacks
+    def test_capture_should_post(self):
+        """Method should call post params with idempotency key."""
+        self.mocked_resp = mocks.Charge.retrieve_success
+        self.resp_mock.code = 200
+
+        charge = yield self.txstripe.Charge.retrieve(
+            mocks.Charge.retrieve_success['id'])
+
+        refund = yield charge.capture('IDEMKEY')
+
+        self.assertEquals(
+            self.treq_mock.request.call_args[1][
+                'headers']['Idempotency-Key'], 'IDEMKEY')
+
+    @defer.inlineCallbacks
+    def test_capture_should_post(self):
+        """Method should call post params with idempotency key."""
+        self.mocked_resp = mocks.Charge.retrieve_success
+        self.resp_mock.code = 200
+
+        charge = yield self.txstripe.Charge.retrieve(
+            mocks.Charge.retrieve_success['id'])
+
+        refund = yield charge.capture('IDEMKEY')
+
+        self.assertEquals(
+            self.treq_mock.request.call_args[1][
+                'headers']['Idempotency-Key'], 'IDEMKEY')
