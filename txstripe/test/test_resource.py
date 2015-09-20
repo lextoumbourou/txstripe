@@ -202,8 +202,10 @@ class ChargeTest(BaseTest):
         self.mocked_resp = mocks.Refund.create_success
         self.resp_mock.code = 200
 
-        refund = yield charge.refund('IDEMKEY')
+        d = charge.refund('IDEMKEY')
+        self.assertIsInstance(d, defer.Deferred)
 
+        refund = yield d
         self.assertEquals(refund.id, mocks.Refund.create_success['id'])
         self.assertEquals(
             self.treq_mock.request.call_args[1][
@@ -218,7 +220,46 @@ class ChargeTest(BaseTest):
         charge = yield self.txstripe.Charge.retrieve(
             mocks.Charge.retrieve_success['id'])
 
-        yield charge.capture('IDEMKEY')
+        d = charge.capture('IDEMKEY')
+        self.assertIsInstance(d, defer.Deferred)
+        yield d
+
+        self.assertEquals(
+            self.treq_mock.request.call_args[1][
+                'headers']['Idempotency-Key'], 'IDEMKEY')
+
+    @defer.inlineCallbacks
+    def test_update_dispute_should_post(self):
+        """Method should call post params with idempotency key."""
+        self.mocked_resp = mocks.Charge.retrieve_success
+        self.resp_mock.code = 200
+
+        charge = yield self.txstripe.Charge.retrieve(
+            mocks.Charge.retrieve_success['id'])
+
+        d = charge.update_dispute('IDEMKEY')
+        self.assertIsInstance(d, defer.Deferred)
+        yield d
+
+        self.assertEquals(
+            self.treq_mock.request.call_args[1][
+                'headers']['Idempotency-Key'], 'IDEMKEY')
+
+    @defer.inlineCallbacks
+    def test_close_dispute_should_post(self):
+        """Method should call post params with idempotency key."""
+        self.mocked_resp = mocks.Charge.retrieve_success
+        self.resp_mock.code = 200
+
+        charge = yield self.txstripe.Charge.retrieve(
+            mocks.Charge.retrieve_success['id'])
+
+        self.mocked_resp = mocks.Dispute.retrieve_success
+        self.resp_mock.code = 200
+
+        d = charge.close_dispute('IDEMKEY')
+        self.assertIsInstance(d, defer.Deferred)
+        yield d
 
         self.assertEquals(
             self.treq_mock.request.call_args[1][

@@ -1,0 +1,51 @@
+import json
+
+retrieve_success = json.loads('''{
+  "id": "dp_1234",
+  "charge": "ch_2345",
+  "amount": 1000,
+  "created": 1442725811,
+  "status": "needs_response",
+  "livemode": false,
+  "currency": "aud",
+  "object": "dispute",
+  "reason": "general",
+  "is_charge_refundable": false,
+  "balance_transactions": [],
+  "evidence_details": {
+    "due_by": 1444435199,
+    "past_due": false,
+    "has_evidence": false,
+    "submission_count": 0
+  },
+  "evidence": {
+    "product_description": "Lorem ipsum dolor sit amet",
+    "customer_name": "Jane Austen",
+    "customer_email_address": null,
+    "billing_address": null,
+    "customer_purchase_ip": null,
+    "shipping_address": null,
+    "shipping_date": null,
+    "shipping_carrier": null,
+    "shipping_tracking_number": null,
+    "service_date": null,
+    "access_activity_log": null,
+    "duplicate_charge_id": null,
+    "duplicate_charge_explanation": null,
+    "refund_policy_disclosure": null,
+    "refund_refusal_explanation": null,
+    "cancellation_policy_disclosure": null,
+    "cancellation_rebuttal": null,
+    "uncategorized_text": null,
+    "customer_signature": null,
+    "receipt": null,
+    "shipping_documentation": "file_1234",
+    "service_documentation": null,
+    "duplicate_charge_documentation": null,
+    "refund_policy": null,
+    "cancellation_policy": null,
+    "customer_communication": null,
+    "uncategorized_file": null
+  },
+  "metadata": {}
+}''')
