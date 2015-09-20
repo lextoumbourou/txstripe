@@ -218,7 +218,7 @@ class ChargeTest(BaseTest):
         charge = yield self.txstripe.Charge.retrieve(
             mocks.Charge.retrieve_success['id'])
 
-        refund = yield charge.capture('IDEMKEY')
+        yield charge.capture('IDEMKEY')
 
         self.assertEquals(
             self.treq_mock.request.call_args[1][
