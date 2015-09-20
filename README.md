@@ -68,6 +68,11 @@ if __name__ == "__main__":
 
 ## Changelog
 
+### 0.0.6
+
+* Fix capture end point.
+* Test coverage.
+
 ### 0.0.5
 
 * Fix bug with ``create`` method not sending up params.
