@@ -300,7 +300,7 @@ class Charge(
 
     def capture(self, idempotency_key=None, **params):
         """Return a deferred."""
-        url = self.instance_url() + '/refund'
+        url = self.instance_url() + '/capture'
         headers = populate_headers(idempotency_key)
         d = self.request('post', url, params, headers)
         return d.addCallback(self.refresh_from).addCallback(lambda _: self)
