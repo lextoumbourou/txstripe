@@ -68,6 +68,10 @@ if __name__ == "__main__":
 
 ## Changelog
 
+### 0.0.7 (unreleased)
+
+* Use api encode method to build requests.
+
 ### 0.0.6
 
 * Fix capture end point.
