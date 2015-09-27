@@ -10,6 +10,7 @@ from stripe.resource import (
     ApplicationFeeRefund as StripeApplicationFeeRefund,
     populate_headers
 )
+from stripe.api_requestor import _api_encode
 
 import txstripe
 
@@ -88,7 +89,7 @@ def make_request(
     if method == 'get' or method == 'delete':
         data = None
     elif method == 'post':
-        data = params
+        data = {k: v for (k, v) in _api_encode(params)}
         params = None
     else:
         raise error.APIConnectionError(
