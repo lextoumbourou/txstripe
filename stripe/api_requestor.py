@@ -64,17 +64,16 @@ def _build_api_url(url, query):
 class APIRequestor(object):
 
     def __init__(self, key=None, client=None, api_base=None, account=None):
-        if api_base:
-            self.api_base = api_base
-        else:
-            self.api_base = stripe.api_base
+        self.api_base = api_base or stripe.api_base
         self.api_key = key
         self.stripe_account = account
 
-        from stripe import verify_ssl_certs
+        from stripe import verify_ssl_certs as verify
+        from stripe import proxy
 
-        self._client = client or http_client.new_default_http_client(
-            verify_ssl_certs=verify_ssl_certs)
+        self._client = client or stripe.default_http_client or \
+            http_client.new_default_http_client(
+                verify_ssl_certs=verify, proxy=proxy)
 
     @classmethod
     def api_url(cls, url=''):
@@ -150,7 +149,11 @@ class APIRequestor(object):
                 "was %d)" % (rbody, rcode),
                 rbody, rcode, resp)
 
-        if rcode in [400, 404]:
+        # Rate limits were previously coded as 400's with code 'rate_limit'
+        if rcode == 429 or (rcode == 400 and err.get('code') == 'rate_limit'):
+            raise error.RateLimitError(
+                err.get('message'), rbody, rcode, resp, rheaders)
+        elif rcode in [400, 404]:
             raise error.InvalidRequestError(
                 err.get('message'), err.get('param'),
                 rbody, rcode, resp, rheaders)
@@ -162,6 +165,10 @@ class APIRequestor(object):
             raise error.CardError(err.get('message'), err.get('param'),
                                   err.get('code'), rbody, rcode, resp,
                                   rheaders)
+        elif rcode == 403:
+            raise error.PermissionError(
+                err.get('message'), rbody, rcode, resp,
+                rheaders)
         else:
             raise error.APIError(err.get('message'), rbody, rcode, resp,
                                  rheaders)
@@ -222,7 +229,7 @@ class APIRequestor(object):
                            ['uname', lambda: ' '.join(platform.uname())]]:
             try:
                 val = func()
-            except Exception, e:
+            except Exception as e:
                 val = "!! %s" % (e,)
             ua[attr] = val
 
@@ -245,14 +252,19 @@ class APIRequestor(object):
             for key, value in supplied_headers.items():
                 headers[key] = value
 
+        util.log_info('Request to Stripe api', method=method, path=abs_url)
+        util.log_debug(
+            'Post details', post_data=post_data, api_version=api_version)
+
         rbody, rcode, rheaders = self._client.request(
             method, abs_url, headers, post_data)
 
-        util.logger.info('%s %s %d', method.upper(), abs_url, rcode)
-        util.logger.debug(
-            'API request to %s returned (response code, response body) of '
-            '(%d, %r)',
-            abs_url, rcode, rbody)
+        util.log_info(
+            'Stripe API response', path=abs_url, response_code=rcode)
+        util.log_debug('API response body', body=rbody)
+        if 'Request-Id' in rheaders:
+            util.log_debug('Dashboard link for request',
+                           link=util.dashboard_link(rheaders['Request-Id']))
         return rbody, rcode, rheaders, my_api_key
 
     def interpret_response(self, rbody, rcode, rheaders):
@@ -266,6 +278,13 @@ class APIRequestor(object):
                 "(HTTP response code was %d)" % (rbody, rcode),
                 rbody, rcode, rheaders)
         if not (200 <= rcode < 300):
+            util.log_info(
+                'Stripe API error received',
+                error_code=resp.get('error', {}).get('code'),
+                error_type=resp.get('error', {}).get('type'),
+                error_message=resp.get('error', {}).get('message'),
+                error_param=resp.get('error', {}).get('param'),
+            )
             self.handle_api_error(rbody, rcode, resp, rheaders)
         return resp
 
@@ -339,3 +358,37 @@ class APIRequestor(object):
     def handle_urllib2_error(self, err, abs_url):
         from stripe.http_client import Urllib2Client
         return self._deprecated_handle_error(Urllib2Client, err)
+
+
+class OAuthRequestor(APIRequestor):
+    def handle_api_error(self, rbody, rcode, resp, rheaders):
+        try:
+            err_type = resp['error']
+        except (KeyError, TypeError):
+            raise error.APIError(
+                "Invalid response object from API: %r (HTTP response code "
+                "was %d)" % (rbody, rcode),
+                rbody, rcode, resp)
+
+        description = resp.get('error_description', None)
+        raise error.OAuthError(
+            err_type, description, rbody, rcode, resp, rheaders)
+
+    def interpret_response(self, rbody, rcode, rheaders):
+        try:
+            if hasattr(rbody, 'decode'):
+                rbody = rbody.decode('utf-8')
+            resp = util.json.loads(rbody)
+        except Exception:
+            raise error.APIError(
+                "Invalid response body from API: %s "
+                "(HTTP response code was %d)" % (rbody, rcode),
+                rbody, rcode, rheaders)
+        if not (200 <= rcode < 300):
+            util.log_info(
+                'Stripe API error received',
+                error=resp.get('error'),
+                error_description=resp.get('error_description', ''),
+            )
+            self.handle_api_error(rbody, rcode, resp, rheaders)
+        return resp

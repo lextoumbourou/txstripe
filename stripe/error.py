@@ -1,4 +1,7 @@
 # Exceptions
+import sys
+
+
 class StripeError(Exception):
 
     def __init__(self, message=None, http_body=None, http_status=None,
@@ -8,22 +11,30 @@ class StripeError(Exception):
         if http_body and hasattr(http_body, 'decode'):
             try:
                 http_body = http_body.decode('utf-8')
-            except:
+            except BaseException:
                 http_body = ('<Could not decode body as utf-8. '
                              'Please report to support@stripe.com>')
 
+        self._message = message
         self.http_body = http_body
         self.http_status = http_status
         self.json_body = json_body
         self.headers = headers or {}
         self.request_id = self.headers.get('request-id', None)
 
-    def __str__(self):
-        msg = super(StripeError, self).__str__()
+    def __unicode__(self):
         if self.request_id is not None:
-            return "Request {0}: {1}".format(self.request_id, msg)
+            msg = self._message or "<empty message>"
+            return u"Request {0}: {1}".format(self.request_id, msg)
         else:
-            return msg
+            return self._message
+
+    if sys.version_info > (3, 0):
+        def __str__(self):
+            return self.__unicode__()
+    else:
+        def __str__(self):
+            return unicode(self).encode('utf-8')
 
 
 class APIError(StripeError):
@@ -57,3 +68,20 @@ class InvalidRequestError(StripeError):
 
 class AuthenticationError(StripeError):
     pass
+
+
+class PermissionError(StripeError):
+    pass
+
+
+class RateLimitError(StripeError):
+    pass
+
+
+class OAuthError(StripeError):
+    def __init__(self, type, description=None, http_body=None,
+                 http_status=None, json_body=None, headers=None):
+        description = description or type
+        super(OAuthError, self).__init__(
+            description, http_body, http_status, json_body, headers)
+        self.type = type
