@@ -68,6 +68,10 @@ if __name__ == "__main__":
 
 ## Changelog
 
+### 0.1.0
+
+* Bump Stripe version to 1.51.0.
+
 ### 0.0.7 (unreleased)
 
 * Use api encode method to build requests.
