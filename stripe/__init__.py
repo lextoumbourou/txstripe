@@ -8,14 +8,23 @@
 # Configuration variables
 
 api_key = None
+client_id = None
 api_base = 'https://api.stripe.com'
+connect_api_base = 'https://connect.stripe.com'
 upload_api_base = 'https://uploads.stripe.com'
 api_version = None
 verify_ssl_certs = True
+proxy = None
+default_http_client = None
+
+# Set to either 'debug' or 'info', controls console logging
+log = None
 
 # Resource
 from stripe.resource import (  # noqa
     Account,
+    AlipayAccount,
+    ApplePayDomain,
     ApplicationFee,
     Balance,
     BalanceTransaction,
@@ -24,6 +33,7 @@ from stripe.resource import (  # noqa
     BitcoinTransaction,
     Card,
     Charge,
+    CountrySpec,
     Coupon,
     Customer,
     Dispute,
@@ -31,12 +41,22 @@ from stripe.resource import (  # noqa
     FileUpload,
     Invoice,
     InvoiceItem,
+    Order,
+    OrderReturn,
     Plan,
+    Product,
     Recipient,
     Refund,
+    SKU,
+    Source,
     Subscription,
+    SubscriptionItem,
+    ThreeDSecure,
     Token,
     Transfer)
+
+# OAuth
+from stripe.oauth import OAuth  # noqa
 
 # Error imports.  Note that we may want to move these out of the root
 # namespace in the future and you should prefer to access them via
@@ -46,8 +66,11 @@ from stripe.error import (  # noqa
     APIConnectionError,
     APIError,
     AuthenticationError,
+    PermissionError,
+    RateLimitError,
     CardError,
     InvalidRequestError,
+    OAuthError,
     StripeError)
 
 # DEPRECATED: These imports will be moved out of the root stripe namespace
