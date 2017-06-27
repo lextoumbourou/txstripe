@@ -6,7 +6,7 @@ except ImportError:
 
 setup(
     name='txstripe',
-    version='0.0.6',
+    version='0.1.0',
     description='Stripe Twisted bindings',
     author='Lex Toumbourou',
     author_email='lextoumbourou@gmail.com',
